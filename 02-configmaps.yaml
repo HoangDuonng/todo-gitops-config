@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: todo-app
+data:
+  GIN_PORT_AUTH: "3100"
+  GRPC_PORT_AUTH: "3101"
+  GIN_PORT_USER: "3200"
+  GRPC_PORT_USER: "3201"
+  GIN_PORT_TASK: "3300"
+  GRPC_AUTH_ADDRESS: "auth-service:3101"
+  GRPC_USER_ADDRESS: "user-service:3201"
