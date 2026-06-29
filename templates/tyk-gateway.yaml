@@ -2,7 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tyk-config
-  namespace: {{ .Values.global.namespace }}
 data:
   tyk.conf: |
     {
@@ -63,7 +62,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: tyk-apps-config
-  namespace: {{ .Values.global.namespace }}
 data:
   auth-service.json: |
     {
@@ -643,7 +641,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.gateway.name }}
-  namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.gateway.replicas }}
   selector:
@@ -692,7 +689,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.gateway.name }}
-  namespace: {{ .Values.global.namespace }}
 spec:
   ports:
     - port: {{ .Values.gateway.servicePort }}
