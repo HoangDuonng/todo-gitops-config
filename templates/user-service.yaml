@@ -12,6 +12,13 @@ spec:
       labels:
         app: {{ .Values.userService.name }}
     spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - "until nc -z {{ .Values.mysql.name }} {{ .Values.mysql.servicePort }}; do echo waiting for mysql; sleep 2; done"
       containers:
         - name: {{ .Values.userService.name }}
           image: "{{ .Values.userService.image.repository }}:{{ .Values.userService.image.tag }}"
