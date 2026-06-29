@@ -1,75 +1,45 @@
-# Todo App GKE Deployment Manifests
+# Todo App GKE Deployment Chart
 
-This directory contains Kubernetes (K8s) manifests optimized for a 3-node GKE cluster running on `e2-micro` instances.
+This repository is structured as a Helm Chart optimized for deploying the Todo application on a 3-node GKE cluster running on `e2-micro` instances.
 
 ---
 
 ## Repository Structure
 
-The manifests are ordered sequentially from `00` to `10`:
+The root directory contains the Helm Chart structure:
 
-- **00-namespace.yaml**: Defines the `todo-app` Namespace.
-- **01-secrets.yaml**: Encrypted credentials (MySQL root password, JWT secret).
-- **02-configmaps.yaml**: Network settings, service ports, and gRPC endpoints.
-- **03-mysql.yaml**: StatefulSet deploying MySQL with a 5GB PVC and automatic schema initialization.
-- **04-redis.yaml**: Deployment deploying Redis for Tyk Gateway caching with a 2GB PVC.
-- **05-auth-service.yaml**: Authentication Go microservice.
-- **06-user-service.yaml**: User Profile Go microservice.
-- **07-task-service.yaml**: Task management Go microservice.
-- **08-tyk-gateway.yaml**: Tyk API Gateway configured for proxying `/auth`, `/user`, and `/tasks` endpoints.
-- **09-todo-fe.yaml**: Frontend application (React + Vite).
-- **10-ingress.yaml**: Ingress routing to expose services externally.
+- **Chart.yaml**: Chart metadata defining the deployment.
+- **values.yaml**: Centralized configuration variables (Git-ignored locally to prevent leaking secrets/custom configs).
+- **templates/**: Parameterized Kubernetes resource templates:
+  - **namespace.yaml**: Defines the `todo-app` Namespace.
+  - **secrets.yaml**: Decrypts and encodes sensitive credentials.
+  - **configmaps.yaml**: Centralized network ports and endpoints.
+  - **mysql.yaml**: StatefulSet deploying MySQL with 5GB PVC.
+  - **redis.yaml**: Deployment deploying Redis for Tyk Gateway caching with 2GB PVC.
+  - **auth-service.yaml**: Authentication Go microservice.
+  - **user-service.yaml**: User Profile Go microservice.
+  - **task-service.yaml**: Task management Go microservice.
+  - **tyk-gateway.yaml**: Tyk API Gateway proxying public traffic.
+  - **todo-fe.yaml**: Frontend application (React + Vite).
+  - **ingress.yaml**: Ingress routing rules for public traffic.
 
 ---
 
 ## Deployment Instructions
 
-Execute the commands sequentially from the root of this directory:
+Ensure your Kubernetes context is set to your GKE cluster, then execute the following command from the root of this repository:
 
-### Step 1: Initialize Namespace, Secrets, and Configurations
-
-```bash
-kubectl apply -f 00-namespace.yaml
-kubectl apply -f 01-secrets.yaml
-kubectl apply -f 02-configmaps.yaml
-```
-
-### Step 2: Deploy Databases
+### Install / Upgrade the Chart
 
 ```bash
-kubectl apply -f 03-mysql.yaml
-kubectl apply -f 04-redis.yaml
-```
-
-_Note: PVC provisioning on GCP may take 1-2 minutes. Verify status before proceeding:_
-
-```bash
-kubectl get pods -n todo-app -w
-```
-
-_Wait until both database pods show `Running 1/1`._
-
-### Step 3: Deploy Microservices, Gateway, and Frontend
-
-```bash
-kubectl apply -f 05-auth-service.yaml
-kubectl apply -f 06-user-service.yaml
-kubectl apply -f 07-task-service.yaml
-kubectl apply -f 08-tyk-gateway.yaml
-kubectl apply -f 09-todo-fe.yaml
-```
-
-### Step 4: Configure Routing (Ingress)
-
-```bash
-kubectl apply -f 10-ingress.yaml
+helm upgrade --install todo-app . -n todo-app --create-namespace
 ```
 
 ---
 
 ## Verification & Troubleshooting
 
-### Check Pod Status
+### Check Rollout Status
 
 ```bash
 kubectl get pods -n todo-app
@@ -83,10 +53,20 @@ _Expected output: All pods in `Running` state and `READY` columns as `1/1` (or `
 kubectl logs deployment/auth-service -n todo-app
 ```
 
-### Get Public IP
+### Accessing the Application
+
+If Ingress is configured:
 
 ```bash
 kubectl get ingress todo-ingress -n todo-app
 ```
 
-_Note: Load balancer provisioning can take 3-5 minutes. Access the application via the IP listed in the `ADDRESS` column (e.g., `http://<EXTERNAL_IP>`)._
+_Access the external IP listed under the `ADDRESS` column._
+
+For local development port-forwarding:
+
+```bash
+kubectl port-forward svc/todo-fe 8080:80 -n todo-app
+```
+
+_Open [http://127.0.0.1:8080](http://127.0.0.1:8080) in your browser._
