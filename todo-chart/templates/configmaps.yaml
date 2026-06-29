@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-configmap
+  namespace: {{ .Values.global.namespace }}
+data:
+  GIN_PORT_AUTH: {{ .Values.config.ginPortAuth | quote }}
+  GRPC_PORT_AUTH: {{ .Values.config.grpcPortAuth | quote }}
+  GIN_PORT_USER: {{ .Values.config.ginPortUser | quote }}
+  GRPC_PORT_USER: {{ .Values.config.grpcPortUser | quote }}
+  GIN_PORT_TASK: {{ .Values.config.ginPortTask | quote }}
+  GRPC_AUTH_ADDRESS: "{{ .Values.authService.name }}:{{ .Values.config.grpcPortAuth }}"
+  GRPC_USER_ADDRESS: "{{ .Values.userService.name }}:{{ .Values.config.grpcPortUser }}"

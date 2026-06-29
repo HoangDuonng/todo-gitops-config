@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.authService.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.authService.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.authService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.authService.name }}
+    spec:
+      containers:
+        - name: {{ .Values.authService.name }}
+          image: "{{ .Values.authService.image.repository }}:{{ .Values.authService.image.tag }}"
+          ports:
+            - containerPort: 3100
+              name: gin
+            - containerPort: 3101
+              name: grpc
+          env:
+            - name: GIN_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: GIN_PORT_AUTH
+            - name: GRPC_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: GRPC_PORT_AUTH
+            - name: GRPC_USER_ADDRESS
+              valueFrom:
+                configMapKeyRef:
+                  name: app-configmap
+                  key: GRPC_USER_ADDRESS
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MYSQL_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
+            - name: DB_DSN
+              value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ .Values.mysql.name }}:3306)/todo-auth?charset=utf8mb4&parseTime=True&loc=Local
+          resources:
+            {{- toYaml .Values.authService.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3100
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 3100
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.authService.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.authService.servicePort.gin }}
+      targetPort: 3100
+      name: gin
+    - port: {{ .Values.authService.servicePort.grpc }}
+      targetPort: 3101
+      name: grpc
+  selector:
+    app: {{ .Values.authService.name }}

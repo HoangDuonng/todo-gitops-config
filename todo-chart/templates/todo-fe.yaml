@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.todoFe.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.todoFe.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.todoFe.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.todoFe.name }}
+    spec:
+      containers:
+        - name: {{ .Values.todoFe.name }}
+          image: "{{ .Values.todoFe.image.repository }}:{{ .Values.todoFe.image.tag }}"
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            {{- toYaml .Values.todoFe.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.todoFe.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.todoFe.servicePort }}
+      targetPort: 80
+  selector:
+    app: {{ .Values.todoFe.name }}
