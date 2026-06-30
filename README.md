@@ -21,6 +21,7 @@ The root directory contains the Helm Chart and ArgoCD configuration:
 To bootstrap ArgoCD and deploy the application, run the following commands sequentially on your cluster:
 
 ### Step 1: Install ArgoCD
+
 ```bash
 # Create namespace
 kubectl create namespace argocd
@@ -29,10 +30,12 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side --force-conflicts
 ```
 
-### Step 2: Deploy the ArgoCD Application (Bootstrap)
-We render the templated Application manifest and apply it to GKE:
+### Step 2: Deploy the ArgoCD Application & Credentials (Bootstrap)
+
+We render both the Application and the Repository Credentials Secret together, passing your GitHub Personal Access Token (PAT) as a parameter:
+
 ```bash
-helm template . -s templates/argocd-app.yaml | kubectl apply -f -
+helm template . -s templates/argocd-app.yaml -s templates/argocd-repo-secret.yaml --set gitops.password="<TOKEN_GITHUB>" | kubectl apply -f -
 ```
 
 ---
@@ -40,12 +43,15 @@ helm template . -s templates/argocd-app.yaml | kubectl apply -f -
 ## 🔍 Verification & Troubleshooting
 
 ### Check Rollout Status
+
 ```bash
 kubectl get pods -n todo-app
 ```
-*Expected output: All pods in `Running` state and `READY` columns as `1/1` (or `2/2` for Tyk Gateway).*
+
+_Expected output: All pods in `Running` state and `READY` columns as `1/1` (or `2/2` for Tyk Gateway)._
 
 ### Retrieve Service Logs
+
 ```bash
 kubectl logs deployment/auth-service -n todo-app
 ```
