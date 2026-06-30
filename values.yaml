@@ -1,0 +1,128 @@
+global:
+  storageClass: standard
+
+gitops:
+  repoURL: https://github.com/HoangDuonng/todo-gitops-config.git
+  username: HoangDuonng
+  password: ""
+config:
+  ginPortAuth: "3100"
+  grpcPortAuth: "3101"
+  ginPortUser: "3200"
+  grpcPortUser: "3201"
+  ginPortTask: "3300"
+
+mysql:
+  name: mysql
+  servicePort: 3306
+  image:
+    repository: mysql
+    tag: "8.0"
+  storageSize: 5Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+redis:
+  name: redis
+  servicePort: 6379
+  image:
+    repository: redis
+    tag: 7.4-alpine
+  storageSize: 2Gi
+  resources:
+    requests:
+      cpu: 10m
+      memory: 48Mi
+    limits:
+      cpu: 100m
+      memory: 96Mi
+
+authService:
+  name: auth-service
+  servicePort:
+    gin: 3100
+    grpc: 3101
+  image:
+    repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo/auth-service
+    tag: ""
+  replicas: 1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+userService:
+  name: user-service
+  servicePort:
+    gin: 3200
+    grpc: 3201
+  image:
+    repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo/profile-service
+    tag: ""
+  replicas: 1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+taskService:
+  name: task-service
+  servicePort:
+    gin: 3300
+  image:
+    repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo/task-service
+    tag: ""
+  replicas: 1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+
+gateway:
+  name: gateway
+  servicePort: 8080
+  image:
+    repository: docker.tyk.io/tyk-gateway/tyk-gateway
+    tag: v5.3.0
+  replicas: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+todoFe:
+  name: todo-fe
+  servicePort: 80
+  image:
+    repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo/todo-fe
+    tag: ""
+  replicas: 1
+  resources:
+    requests:
+      cpu: 5m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 32Mi
+
+ingress:
+  className: gce
+  annotations:
+    kubernetes.io/ingress.class: "gce"
