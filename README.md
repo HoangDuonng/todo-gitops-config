@@ -100,3 +100,20 @@ Check if the External Secrets Operator successfully retrieved the secrets from G
 kubectl get externalsecret app-secrets -n todo-app
 kubectl get secret app-secrets -n todo-app -o yaml
 ```
+
+---
+
+## 💤 Cost Optimization (Cluster Hibernation)
+
+To save on GCP VM costs when you are not using the cluster (saving up to 70% of your bill), you can temporarily hibernate the GKE cluster by scaling it down to 0 VMs (this will NOT delete your database persistent storage) and scaling it back up when you need it:
+
+### Scale Down Command (Hibernate - 0 Nodes):
+```bash
+gcloud container clusters resize todo-cluster --num-nodes=0 --zone=asia-southeast1-a
+```
+
+### Scale Up Command (Resume - 3 Nodes):
+```bash
+gcloud container clusters resize todo-cluster --num-nodes=3 --zone=asia-southeast1-a
+```
+
