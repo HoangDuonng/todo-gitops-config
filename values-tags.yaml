@@ -1,0 +1,12 @@
+authService:
+  image:
+    tag: d597da6dc683459966c0692a7d654ee0ff4f4708
+userService:
+  image:
+    tag: d597da6dc683459966c0692a7d654ee0ff4f4708
+taskService:
+  image:
+    tag: d597da6dc683459966c0692a7d654ee0ff4f4708
+todoFe:
+  image:
+    tag: 2734f99f26aa519c184f186604dd1edf689839e8
