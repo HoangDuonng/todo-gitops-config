@@ -25,8 +25,8 @@ To bootstrap ArgoCD and deploy the application, run the following commands seque
 # Create namespace
 kubectl create namespace argocd
 
-# Install ArgoCD
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# Install ArgoCD (Sử dụng --server-side để tránh lỗi bộ nhớ đệm annotations quá giới hạn)
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side
 ```
 
 ### Step 2: Deploy the ArgoCD Application (Bootstrap)
