@@ -200,15 +200,18 @@ helm upgrade --install loki grafana/loki-stack \
 
 ---
 
-## 🧹 Resource & History Retention (Best Practices)
+## Resource & History Retention (Best Practices)
 
 To prevent resource and storage bloat on both GCP and GKE, we apply strict history limits and log retention:
 
 ### 1. K8s & ArgoCD Revision History Limits
+
 All Deployments, StatefulSets, and the ArgoCD Application are configured with `revisionHistoryLimit: 5` to keep only the 5 most recent versions for rollbacks.
 
 ### 2. Loki Log Retention (2 Days)
+
 Loki is configured to delete logs older than **48 hours (2 days)**. To apply this, re-run:
+
 ```bash
 helm upgrade --install loki grafana/loki-stack \
   -n monitoring \
@@ -216,7 +219,9 @@ helm upgrade --install loki grafana/loki-stack \
 ```
 
 ### 3. Google Artifact Registry Cleanup Policy
+
 We keep only the **5 most recent image tags** in the Artifact Registry. Apply this policy using the command:
+
 ```bash
 gcloud artifacts repositories set-cleanup-policies todo-repo \
     --project=todo-devops-500719 \
@@ -224,3 +229,48 @@ gcloud artifacts repositories set-cleanup-policies todo-repo \
     --policy=gcp/gar-cleanup-policy.json
 ```
 
+---
+
+## Zero-Trust Network Policies (Pod Security)
+
+We implement fine-grained pod isolation using Kubernetes `NetworkPolicy` to ensure zero-trust security (e.g., preventing the frontend from connecting directly to the database).
+
+### GKE Requirement: Enable Network Policy Enforcement
+
+By default, GKE Standard clusters ignore `NetworkPolicy` resources. You **must** enable the Network Policy addon:
+
+- **Enable on the existing cluster:**
+
+  ```bash
+  # Step 1: Enable the control plane addon
+  gcloud container clusters update todo-cluster \
+      --zone=asia-southeast1-a \
+      --update-addons=NetworkPolicy=ENABLED
+
+  # Step 2: Enable the node enforcement (causes node pool rolling update)
+  gcloud container clusters update todo-cluster \
+      --zone=asia-southeast1-a \
+      --enable-network-policy
+  ```
+
+- **(Recommended) Create the cluster with Network Policies enabled from the start:**
+  If you delete and recreate your GKE cluster, ensure you append `--enable-network-policy` to your `gcloud container clusters create` command:
+  ```bash
+  gcloud container clusters create todo-cluster \
+      --zone=asia-southeast1-a \
+      --num-nodes=3 \
+      --enable-network-policy \
+      [other-options...]
+  ```
+
+### Verification Commands
+
+Once enabled, verify that internal network isolation is functioning:
+
+```bash
+# 1. Test Auth Service -> MySQL (Should Succeed / Open)
+kubectl exec -it $(kubectl get pods -n todo-app -l app=auth-service -o jsonpath='{.items[0].metadata.name}') -n todo-app -- nc -zv mysql 3306
+
+# 2. Test Frontend -> MySQL (Should Fail / Timeout)
+kubectl exec -it $(kubectl get pods -n todo-app -l app=todo-fe -o jsonpath='{.items[0].metadata.name}') -n todo-app -- nc -zv mysql 3306
+```
