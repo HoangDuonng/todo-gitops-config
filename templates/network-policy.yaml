@@ -43,18 +43,17 @@ spec:
     matchLabels:
       app: {{ .Values.todoFe.name }}
   ingress:
-  # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
   - from:
+    # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
     - ipBlock:
         cidr: 35.191.0.0/16
     - ipBlock:
         cidr: 130.211.0.0/22
-  # 2. Allow traffic from the GKE Ingress controller namespace
-  - from:
+    # 2. Allow traffic from the GKE Ingress controller namespace
     - namespaceSelector: {}
-  ports:
-  - protocol: TCP
-    port: 80
+    ports:
+    - protocol: TCP
+      port: 80
   policyTypes:
   - Ingress
 
@@ -69,18 +68,17 @@ spec:
     matchLabels:
       app: {{ .Values.gateway.name }}
   ingress:
-  # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
   - from:
+    # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
     - ipBlock:
         cidr: 35.191.0.0/16
     - ipBlock:
         cidr: 130.211.0.0/22
-  # 2. Allow traffic from the GKE Ingress controller namespace
-  - from:
+    # 2. Allow traffic from the GKE Ingress controller namespace
     - namespaceSelector: {}
-  ports:
-  - protocol: TCP
-    port: 8080
+    ports:
+    - protocol: TCP
+      port: 8080
   policyTypes:
   - Ingress
 
@@ -100,9 +98,9 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ .Values.gateway.name }}
-  ports:
-  - protocol: TCP
-    port: 6379
+    ports:
+    - protocol: TCP
+      port: 6379
   policyTypes:
   - Ingress
 
@@ -122,11 +120,11 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ .Values.gateway.name }}
-  ports:
-  - protocol: TCP
-    port: 3100
-  - protocol: TCP
-    port: 3101
+    ports:
+    - protocol: TCP
+      port: 3100
+    - protocol: TCP
+      port: 3101
   policyTypes:
   - Ingress
 
@@ -146,9 +144,9 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ .Values.gateway.name }}
-  ports:
-  - protocol: TCP
-    port: 3300
+    ports:
+    - protocol: TCP
+      port: 3300
   policyTypes:
   - Ingress
 
@@ -204,8 +202,8 @@ spec:
     - podSelector:
         matchLabels:
           app: {{ .Values.userService.name }}
-  ports:
-  - protocol: TCP
-    port: 3306
+    ports:
+    - protocol: TCP
+      port: 3306
   policyTypes:
   - Ingress
