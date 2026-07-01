@@ -1,0 +1,211 @@
+# Zero-Trust Network Policies for Todo-App Namespace
+# Enforces Ingress isolation for all workloads.
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: {{ .Release.Namespace }}
+spec:
+  # Match all pods in the namespace
+  podSelector: {}
+  policyTypes:
+  - Ingress
+# By default, block all ingress traffic unless whitelisted below.
+# Egress is left open so pods can access external GKE services and Google APIs.
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring
+  namespace: {{ .Release.Namespace }}
+spec:
+  # Allow Prometheus from monitoring namespace to scrape all pods
+  podSelector: {}
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.todoFe.name }}
+  ingress:
+  # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
+  - from:
+    - ipBlock:
+        cidr: 35.191.0.0/16
+    - ipBlock:
+        cidr: 130.211.0.0/22
+  # 2. Allow traffic from the GKE Ingress controller namespace
+  - from:
+    - namespaceSelector: {}
+  ports:
+  - protocol: TCP
+    port: 80
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.gateway.name }}
+  ingress:
+  # 1. Allow traffic from GCP Load Balancer Health Checks (GoogleHC)
+  - from:
+    - ipBlock:
+        cidr: 35.191.0.0/16
+    - ipBlock:
+        cidr: 130.211.0.0/22
+  # 2. Allow traffic from the GKE Ingress controller namespace
+  - from:
+    - namespaceSelector: {}
+  ports:
+  - protocol: TCP
+    port: 8080
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+  ingress:
+  # Allow access ONLY from the Tyk Gateway pod
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.gateway.name }}
+  ports:
+  - protocol: TCP
+    port: 6379
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-auth-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.authService.name }}
+  ingress:
+  # Allow HTTP and gRPC access ONLY from the Tyk Gateway pod
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.gateway.name }}
+  ports:
+  - protocol: TCP
+    port: 3100
+  - protocol: TCP
+    port: 3101
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-task-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.taskService.name }}
+  ingress:
+  # Allow HTTP access ONLY from the Tyk Gateway pod
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.gateway.name }}
+  ports:
+  - protocol: TCP
+    port: 3300
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-user-service
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.userService.name }}
+  ingress:
+  # 1. Allow HTTP access from Tyk Gateway
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.gateway.name }}
+    ports:
+    - protocol: TCP
+      port: 3200
+  # 2. Allow gRPC access from Auth Service (user verification)
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.authService.name }}
+    ports:
+    - protocol: TCP
+      port: 3201
+  policyTypes:
+  - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-mysql
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.mysql.name }}
+  ingress:
+  # Allow MySQL connections ONLY from backend microservices
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.authService.name }}
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.taskService.name }}
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.userService.name }}
+  ports:
+  - protocol: TCP
+    port: 3306
+  policyTypes:
+  - Ingress
