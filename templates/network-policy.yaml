@@ -115,7 +115,7 @@ spec:
     matchLabels:
       app: {{ .Values.authService.name }}
   ingress:
-  # Allow HTTP and gRPC access ONLY from the Tyk Gateway pod
+  # 1. Allow HTTP and gRPC access from Tyk Gateway
   - from:
     - podSelector:
         matchLabels:
@@ -123,6 +123,17 @@ spec:
     ports:
     - protocol: TCP
       port: 3100
+    - protocol: TCP
+      port: 3101
+  # 2. Allow gRPC access from user-service and task-service
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.userService.name }}
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.taskService.name }}
+    ports:
     - protocol: TCP
       port: 3101
   policyTypes:
@@ -169,11 +180,14 @@ spec:
     ports:
     - protocol: TCP
       port: 3200
-  # 2. Allow gRPC access from Auth Service (user verification)
+  # 2. Allow gRPC access from Auth Service and Task Service
   - from:
     - podSelector:
         matchLabels:
           app: {{ .Values.authService.name }}
+    - podSelector:
+        matchLabels:
+          app: {{ .Values.taskService.name }}
     ports:
     - protocol: TCP
       port: 3201
