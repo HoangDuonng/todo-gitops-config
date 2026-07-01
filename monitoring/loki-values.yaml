@@ -1,0 +1,38 @@
+# Optimized Loki & Promtail Configuration (loki-stack) for Dev GKE Cluster
+# Deploys Loki (log storage) and Promtail (log agent DaemonSet)
+
+loki:
+  enabled: true
+  
+  # Set isDefault to false to avoid conflict with Prometheus inside Grafana
+  isDefault: false
+
+  # Resource requests & limits for Loki
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+  # Storage Settings - Use local PV with 5Gi capacity
+  persistence:
+    enabled: true
+    size: 5Gi
+
+promtail:
+  enabled: true
+  
+  # Resource requests & limits for Promtail (runs on every node to collect logs)
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 5m
+      memory: 30Mi
+
+  # Map Loki endpoint properly
+  config:
+    lokiAddress: http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push

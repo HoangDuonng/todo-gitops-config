@@ -128,3 +128,72 @@ gcloud container clusters resize todo-cluster --num-nodes=0 --zone=asia-southeas
 ```bash
 gcloud container clusters resize todo-cluster --num-nodes=3 --zone=asia-southeast1-a
 ```
+
+---
+
+## Monitoring & Logging (Observability)
+
+We deploy **kube-prometheus-stack** (Prometheus & Grafana) and **loki-stack** (Loki & Promtail) to provide centralized logging, dashboards, and metrics.
+
+### Step 1: Deploy Prometheus & Grafana (kube-prometheus-stack)
+
+Apply the customized lightweight configuration values:
+
+```bash
+# 1. Create monitoring namespace
+kubectl create namespace monitoring || true
+
+# 2. Add Helm charts
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+# 3. Deploy Prometheus & Grafana
+helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
+  -n monitoring \
+  -f monitoring/prometheus-values.yaml
+```
+
+### Step 2: Deploy Loki & Promtail (loki-stack)
+
+```bash
+# Deploy Loki & Promtail
+helm upgrade --install loki grafana/loki-stack \
+  -n monitoring \
+  -f monitoring/loki-values.yaml
+```
+
+### Step 3: Access Grafana UI & Query Logs
+
+1. **Get Grafana Public IP:**
+
+   ```bash
+   kubectl get svc prometheus-grafana -n monitoring -w
+   ```
+
+   Once the `EXTERNAL-IP` changes from `<pending>` to a public IP, open it in your browser:
+   **`http://<EXTERNAL_IP>`** (by default exposed on port 80).
+
+2. **Retrieve Grafana Credentials:**
+   - **Username**: `admin`
+   - **Password**: Get the decoded password using the command:
+     - _On PowerShell:_
+       ```powershell
+       [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret prometheus-grafana -n monitoring -o jsonpath="{.data.admin-password}")))
+       ```
+     - _On Bash:_
+       ```bash
+       kubectl get secret prometheus-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
+       ```
+
+3. **Query Microservices Logs (Loki):**
+   - In Grafana, click the menu and navigate to **Explore**.
+   - Choose the **Loki** data source from the dropdown.
+   - Run LogQL queries to view your app logs, e.g., to query all logs in the `todo-app` namespace:
+     ```logql
+     {namespace="todo-app"}
+     ```
+     Or query a specific microservice:
+     ```logql
+     {namespace="todo-app", pod=~"auth-service-.*"}
+     ```

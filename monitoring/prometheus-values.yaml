@@ -1,0 +1,73 @@
+# Optimized Prometheus & Grafana Configuration for Dev GKE Cluster
+# Reduces memory footprint to fit in 4GB RAM nodes.
+
+# 1. Disable Alertmanager to save ~200Mi RAM
+alertmanager:
+  enabled: false
+
+# 2. Configure Prometheus Operator resources
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 150Mi
+    requests:
+      cpu: 10m
+      memory: 80Mi
+
+# 3. Configure Prometheus Instance (The heaviest component)
+prometheus:
+  prometheusSpec:
+    # Retain metrics for only 12 hours to save storage and RAM
+    retention: 12h
+    
+    # Resource requests & limits to ensure K8s scheduler places it on lighter nodes
+    resources:
+      limits:
+        cpu: 300m
+        memory: 512Mi
+      requests:
+        cpu: 50m
+        memory: 256Mi
+
+    # Storage Settings - Use standard storage class with 5Gi capacity
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+# 4. Configure Kube State Metrics resources
+kube-state-metrics:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 50Mi
+
+# 5. Configure Node Exporter resources
+prometheus-node-exporter:
+  resources:
+    limits:
+      cpu: 50m
+      memory: 50Mi
+    requests:
+      cpu: 10m
+      memory: 20Mi
+
+# 6. Configure Grafana & Auto-bind Loki Data Source
+grafana:
+  service:
+    type: LoadBalancer
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 50m
+      memory: 100Mi
+  
