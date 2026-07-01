@@ -6,7 +6,7 @@ userService:
     tag: 2da7292058805e89ead834f4cf01fde3bcb8d2e9
 taskService:
   image:
-    tag: 97146d4f0cfdf55cfd4790016980d0c6fe3a1653
+    tag: 2da7292058805e89ead834f4cf01fde3bcb8d2e9
 todoFe:
   image:
     tag: 2da7292058805e89ead834f4cf01fde3bcb8d2e9
