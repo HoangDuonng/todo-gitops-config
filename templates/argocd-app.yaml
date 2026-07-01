@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  revisionHistoryLimit: 5
   source:
     repoURL: {{ .Values.gitops.repoURL | quote }}
     targetRevision: HEAD

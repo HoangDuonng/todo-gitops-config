@@ -197,3 +197,30 @@ helm upgrade --install loki grafana/loki-stack \
      ```logql
      {namespace="todo-app", pod=~"auth-service-.*"}
      ```
+
+---
+
+## 🧹 Resource & History Retention (Best Practices)
+
+To prevent resource and storage bloat on both GCP and GKE, we apply strict history limits and log retention:
+
+### 1. K8s & ArgoCD Revision History Limits
+All Deployments, StatefulSets, and the ArgoCD Application are configured with `revisionHistoryLimit: 5` to keep only the 5 most recent versions for rollbacks.
+
+### 2. Loki Log Retention (2 Days)
+Loki is configured to delete logs older than **48 hours (2 days)**. To apply this, re-run:
+```bash
+helm upgrade --install loki grafana/loki-stack \
+  -n monitoring \
+  -f monitoring/loki-values.yaml
+```
+
+### 3. Google Artifact Registry Cleanup Policy
+We keep only the **5 most recent image tags** in the Artifact Registry. Apply this policy using the command:
+```bash
+gcloud artifacts repositories set-cleanup-policies todo-repo \
+    --project=todo-devops-500719 \
+    --location=asia-southeast1 \
+    --policy=gcp/gar-cleanup-policy.json
+```
+

@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.userService.name }}
 spec:
+  revisionHistoryLimit: 5
   replicas: {{ .Values.userService.replicas }}
   selector:
     matchLabels:

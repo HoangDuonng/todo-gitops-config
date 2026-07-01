@@ -82,6 +82,7 @@ kind: StatefulSet
 metadata:
   name: {{ .Values.mysql.name }}
 spec:
+  revisionHistoryLimit: 5
   serviceName: {{ .Values.mysql.name }}
   replicas: 1
   selector:

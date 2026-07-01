@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.todoFe.name }}
 spec:
+  revisionHistoryLimit: 5
   replicas: {{ .Values.todoFe.replicas }}
   selector:
     matchLabels:

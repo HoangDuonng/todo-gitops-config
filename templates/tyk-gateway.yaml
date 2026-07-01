@@ -642,6 +642,7 @@ kind: Deployment
 metadata:
   name: {{ .Values.gateway.name }}
 spec:
+  revisionHistoryLimit: 5
   replicas: {{ .Values.gateway.replicas }}
   selector:
     matchLabels:
