@@ -9,4 +9,4 @@ taskService:
     tag: 97146d4f0cfdf55cfd4790016980d0c6fe3a1653
 todoFe:
   image:
-    tag: e89359e39a652c0c99068ce12a702ee1c5a90538
+    tag: 2da7292058805e89ead834f4cf01fde3bcb8d2e9
