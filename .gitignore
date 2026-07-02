@@ -1,2 +1,6 @@
 # Ignore sensitive Kubernetes secret files
 01-secrets.yaml
+
+# Ignore Helm dependency tarballs and directories
+**/charts/*.tgz
+**/charts/

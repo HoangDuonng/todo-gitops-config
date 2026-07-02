@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo-app
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/HoangDuonng/todo-gitops-config.git"
+    targetRevision: HEAD
+    path: apps/todo-app
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-tags.yaml
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: todo-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
