@@ -1,5 +1,9 @@
 global:
   storageClass: standard
+  labels:
+    env: dev
+    team: devops
+    project: todo-app
 
 gitops:
   repoURL: https://github.com/HoangDuonng/todo-gitops-config.git

@@ -24,6 +24,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.redis.name }}
+        {{- if .Values.global.labels }}
+        {{- toYaml .Values.global.labels | nindent 8 }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Values.redis.name }}

@@ -123,10 +123,10 @@ To save on GCP VM costs when you are not using the cluster (saving up to 70% of 
 gcloud container clusters resize todo-cluster --num-nodes=0 --zone=asia-southeast1-a
 ```
 
-### Scale Up Command (Resume - 3 Nodes):
+### Scale Up Command (Resume - 2 Nodes):
 
 ```bash
-gcloud container clusters resize todo-cluster --num-nodes=3 --zone=asia-southeast1-a
+gcloud container clusters resize todo-cluster --num-nodes=2 --zone=asia-southeast1-a
 ```
 
 ---
@@ -258,7 +258,7 @@ By default, GKE Standard clusters ignore `NetworkPolicy` resources. You **must**
   ```bash
   gcloud container clusters create todo-cluster \
       --zone=asia-southeast1-a \
-      --num-nodes=3 \
+      --num-nodes=2 \
       --enable-network-policy \
       [other-options...]
   ```

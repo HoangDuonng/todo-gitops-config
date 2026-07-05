@@ -92,6 +92,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.mysql.name }}
+        {{- if .Values.global.labels }}
+        {{- toYaml .Values.global.labels | nindent 8 }}
+        {{- end }}
     spec:
       containers:
         - name: {{ .Values.mysql.name }}

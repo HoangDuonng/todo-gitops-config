@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.taskService.name }}
+        {{- if .Values.global.labels }}
+        {{- toYaml .Values.global.labels | nindent 8 }}
+        {{- end }}
     spec:
       initContainers:
         - name: wait-for-mysql

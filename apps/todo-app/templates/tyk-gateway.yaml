@@ -651,6 +651,9 @@ spec:
     metadata:
       labels:
         app: {{ .Values.gateway.name }}
+        {{- if .Values.global.labels }}
+        {{- toYaml .Values.global.labels | nindent 8 }}
+        {{- end }}
     spec:
       initContainers:
         - name: wait-for-redis
