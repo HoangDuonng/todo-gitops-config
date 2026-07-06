@@ -23,6 +23,21 @@ spec:
             limits:
               cpu: 100m
               memory: 200Mi
+          additionalDataSources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus-monitoring-kube-prometheus.monitoring:9090
+              isDefault: true
+              jsonData:
+                httpMethod: POST
+                timeInterval: 30s
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki:3100
+              jsonData:
+                maxLines: 1000
         prometheus:
           prometheusSpec:
             resources:
