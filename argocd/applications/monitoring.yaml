@@ -25,7 +25,23 @@ spec:
               memory: 200Mi
           sidecar:
             datasources:
-              enabled: true
+              enabled: false
+          additionalDataSources:
+            - name: Prometheus
+              type: prometheus
+              access: proxy
+              url: http://prometheus-monitoring-kube-prometheus.monitoring:9090
+              isDefault: true
+              jsonData:
+                httpMethod: POST
+                timeInterval: 30s
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki-logging:3100
+              isDefault: false
+              jsonData:
+                maxLines: 1000
         prometheus:
           prometheusSpec:
             resources:
