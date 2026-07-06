@@ -16,6 +16,13 @@ spec:
         grafana:
           service:
             type: LoadBalancer
+          resources:
+            requests:
+              cpu: 20m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
         prometheus:
           prometheusSpec:
             resources:
@@ -37,6 +44,29 @@ spec:
         prometheusOperator:
           admissionWebhooks:
             enabled: false
+          resources:
+            requests:
+              cpu: 20m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 200Mi
+        prometheus-node-exporter:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+            limits:
+              cpu: 50m
+              memory: 50Mi
+        kube-state-metrics:
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
+            limits:
+              cpu: 50m
+              memory: 50Mi
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
