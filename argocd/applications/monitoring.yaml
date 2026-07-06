@@ -16,6 +16,24 @@ spec:
         grafana:
           service:
             type: LoadBalancer
+        prometheus:
+          prometheusSpec:
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+        alertmanager:
+          alertmanagerSpec:
+            resources:
+              requests:
+                cpu: 50m
+                memory: 100Mi
+              limits:
+                cpu: 100m
+                memory: 200Mi
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
