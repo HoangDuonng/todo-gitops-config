@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: {{ .Values.gitops.repoURL | quote }}
     targetRevision: HEAD
-    path: .
+    path: apps/todo-app
     helm:
       valueFiles:
         - values.yaml
