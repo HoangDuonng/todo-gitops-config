@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki-logging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: loki-stack
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 2.10.2
+    helm:
+      values: |
+        loki:
+          enabled: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        promtail:
+          enabled: true
+          resources:
+            requests:
+              cpu: 20m
+              memory: 50Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+        grafana:
+          enabled: false
+        prometheus:
+          enabled: false
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
