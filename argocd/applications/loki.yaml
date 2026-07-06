@@ -49,6 +49,12 @@ spec:
           replicas: 0
         gateway:
           enabled: false
+        chunksCache:
+          enabled: false
+        resultsCache:
+          enabled: false
+        lokiCanary:
+          enabled: false
         monitoring:
           selfMonitoring:
             enabled: false
