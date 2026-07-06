@@ -15,6 +15,7 @@ spec:
       values: |
         loki:
           enabled: true
+          isDefault: false
           resources:
             requests:
               cpu: 50m
