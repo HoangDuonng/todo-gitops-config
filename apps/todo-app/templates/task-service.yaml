@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: MYSQL_ROOT_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: JWT_SECRET
             - name: DB_DSN
               value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ .Values.mysql.name }}:3306)/todo-task?charset=utf8mb4&parseTime=True&loc=Local
           resources:
