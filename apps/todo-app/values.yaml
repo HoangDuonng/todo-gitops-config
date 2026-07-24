@@ -1,5 +1,5 @@
 global:
-  storageClass: standard
+  storageClass: local-path
   labels:
     env: dev
     team: devops
@@ -127,6 +127,6 @@ todoFe:
       memory: 32Mi
 
 ingress:
-  className: gce
+  className: nginx
   annotations:
-    kubernetes.io/ingress.class: "gce"
+    kubernetes.io/ingress.class: "nginx"
