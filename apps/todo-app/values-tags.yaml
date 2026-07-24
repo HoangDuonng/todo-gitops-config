@@ -1,6 +1,6 @@
 authService:
   image:
-    tag: d9b687ba09e55f7b53c31a2148113593fa7c9ccf
+    tag: 77d91152c125025fa5b0892a3512c9b7aa4de955
 userService:
   image:
     tag: d9b687ba09e55f7b53c31a2148113593fa7c9ccf
