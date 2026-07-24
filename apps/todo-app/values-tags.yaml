@@ -3,7 +3,7 @@ authService:
     tag: 77d91152c125025fa5b0892a3512c9b7aa4de955
 userService:
   image:
-    tag: 77d91152c125025fa5b0892a3512c9b7aa4de955
+    tag: 8fe6694a60a95aa709a7a8961d70c2fef3745d61
 taskService:
   image:
     tag: 8fe6694a60a95aa709a7a8961d70c2fef3745d61
