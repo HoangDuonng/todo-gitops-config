@@ -1,11 +1,14 @@
 authService:
   image:
     tag: 52b5fea94bc75a91c40ecffb707865855447f65a
+    tag: 52b5fea94bc75a91c40ecffb707865855447f65a
 userService:
   image:
     tag: 52b5fea94bc75a91c40ecffb707865855447f65a
+    tag: 52b5fea94bc75a91c40ecffb707865855447f65a
 taskService:
   image:
+    tag: 52b5fea94bc75a91c40ecffb707865855447f65a
     tag: 52b5fea94bc75a91c40ecffb707865855447f65a
 todoFe:
   image:
