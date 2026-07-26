@@ -53,7 +53,7 @@ authService:
     grpc: 3101
   image:
     repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/auth-service
-    tag: ""
+    tag: "latest"
   replicas: 1
   resources:
     requests:
@@ -70,7 +70,7 @@ userService:
     grpc: 3201
   image:
     repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/profile-service
-    tag: ""
+    tag: "latest"
   replicas: 1
   resources:
     requests:
@@ -86,7 +86,7 @@ taskService:
     gin: 3300
   image:
     repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/task-service
-    tag: ""
+    tag: "latest"
   replicas: 1
   resources:
     requests:
@@ -116,7 +116,7 @@ todoFe:
   servicePort: 80
   image:
     repository: asia-southeast1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/todo-fe
-    tag: ""
+    tag: "latest"
   replicas: 1
   resources:
     requests:
