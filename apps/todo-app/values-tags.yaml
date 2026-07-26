@@ -9,4 +9,4 @@ taskService:
     tag: 52b5fea94bc75a91c40ecffb707865855447f65a
 todoFe:
   image:
-    tag: 52b5fea94bc75a91c40ecffb707865855447f65a
+    tag: 2a1816c8e428b5cf2c53a99abe0a8d70d89a31a7
