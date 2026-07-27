@@ -31,6 +31,8 @@ spec:
                   period: 24h
         singleBinary:
           replicas: 1
+          nodeSelector:
+            workload: infrastructure
           persistence:
             enabled: true
             size: 5Gi

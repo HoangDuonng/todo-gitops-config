@@ -14,6 +14,8 @@ spec:
     helm:
       values: |
         grafana:
+          nodeSelector:
+            workload: infrastructure
           service:
             type: LoadBalancer
           resources:
@@ -47,6 +49,8 @@ spec:
                     maxLines: 1000
         prometheus:
           prometheusSpec:
+            nodeSelector:
+              workload: infrastructure
             resources:
               requests:
                 cpu: 100m
