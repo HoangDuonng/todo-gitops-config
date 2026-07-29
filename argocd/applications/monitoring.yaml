@@ -13,6 +13,9 @@ spec:
     targetRevision: 62.6.0
     helm:
       values: |
+        #--------------------------------------------------------------
+        # Grafana
+        #--------------------------------------------------------------
         grafana:
           nodeSelector:
             workload: infrastructure
@@ -20,82 +23,122 @@ spec:
             type: ClusterIP
           resources:
             requests:
-              cpu: 20m
-              memory: 100Mi
+              cpu: 50m
+              memory: 128Mi
             limits:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 200m
+              memory: 256Mi
+
+          # Enable sidecar so dashboards & datasources are auto-provisioned
           sidecar:
             datasources:
-              enabled: false
-          datasources:
-            datasources.yaml:
-              apiVersion: 1
-              datasources:
-                - name: Prometheus
-                  type: prometheus
-                  access: proxy
-                  url: http://prometheus-monitoring-kube-prometheus.monitoring:9090
-                  isDefault: true
-                  jsonData:
-                    httpMethod: POST
-                    timeInterval: 30s
-                - name: Loki
-                  type: loki
-                  access: proxy
-                  url: http://loki-logging:3100
-                  isDefault: false
-                  jsonData:
-                    maxLines: 1000
+              enabled: true
+              defaultDatasourceEnabled: true
+            dashboards:
+              enabled: true
+              searchNamespace: monitoring
+
+          # Explicit datasources (Loki is not auto-discovered)
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              access: proxy
+              url: http://loki-logging.monitoring:3100
+              isDefault: false
+              jsonData:
+                maxLines: 1000
+
+          persistence:
+            enabled: true
+            size: 2Gi
+            storageClassName: local-path
+
+        #--------------------------------------------------------------
+        # Prometheus
+        #--------------------------------------------------------------
         prometheus:
           prometheusSpec:
             nodeSelector:
               workload: infrastructure
+            retention: 15d
             resources:
               requests:
-                cpu: 100m
+                cpu: 200m
                 memory: 512Mi
               limits:
-                cpu: 500m
-                memory: 1Gi
+                cpu: 1
+                memory: 2Gi
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: local-path
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
+
+        #--------------------------------------------------------------
+        # Alertmanager
+        #--------------------------------------------------------------
         alertmanager:
           alertmanagerSpec:
+            nodeSelector:
+              workload: infrastructure
             resources:
               requests:
                 cpu: 50m
-                memory: 100Mi
+                memory: 64Mi
               limits:
                 cpu: 100m
-                memory: 200Mi
+                memory: 128Mi
+
+        #--------------------------------------------------------------
+        # Prometheus Operator
+        #--------------------------------------------------------------
         prometheusOperator:
+          nodeSelector:
+            workload: infrastructure
           admissionWebhooks:
             enabled: true
           resources:
             requests:
-              cpu: 20m
-              memory: 100Mi
+              cpu: 50m
+              memory: 128Mi
             limits:
-              cpu: 100m
-              memory: 200Mi
+              cpu: 200m
+              memory: 256Mi
+
+        #--------------------------------------------------------------
+        # Node Exporter  (DaemonSet – runs on every node)
+        # hostNetwork: false  → avoids port 9100 conflict with
+        #   kube-proxy service rules.  Host metrics are still collected
+        #   via mounted hostPath volumes (/proc, /sys, /).
+        #--------------------------------------------------------------
         prometheus-node-exporter:
           hostNetwork: false
-          service:
-            hostPort: null
+          hostPID: true
           resources:
             requests:
               cpu: 10m
-              memory: 20Mi
+              memory: 32Mi
             limits:
-              cpu: 50m
-              memory: 50Mi
+              cpu: 100m
+              memory: 64Mi
+
+        #--------------------------------------------------------------
+        # Kube State Metrics
+        #--------------------------------------------------------------
         kube-state-metrics:
+          nodeSelector:
+            workload: infrastructure
           resources:
             requests:
               cpu: 10m
-              memory: 20Mi
+              memory: 32Mi
             limits:
-              cpu: 50m
-              memory: 50Mi
+              cpu: 100m
+              memory: 128Mi
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: monitoring
