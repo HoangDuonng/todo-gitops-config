@@ -18,9 +18,15 @@ spec:
             workload: infrastructure
           service:
             type: ClusterIP
+          grafana.ini:
+            server:
+              domain: localhost
+              root_url: "%(protocol)s://%(domain)s:%(port)s/grafana/"
+              serve_from_sub_path: true
           ingress:
             enabled: true
             ingressClassName: nginx
+            path: /grafana
           resources:
             requests:
               cpu: 20m
