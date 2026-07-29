@@ -87,8 +87,6 @@ spec:
               cpu: 100m
               memory: 200Mi
         prometheus-node-exporter:
-          extraArgs:
-            - --web.listen-address=0.0.0.0:9100
           resources:
             requests:
               cpu: 10m
