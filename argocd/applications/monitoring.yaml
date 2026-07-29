@@ -78,6 +78,8 @@ spec:
               cpu: 100m
               memory: 200Mi
         prometheus-node-exporter:
+          service:
+            hostPort: null
           resources:
             requests:
               cpu: 10m
