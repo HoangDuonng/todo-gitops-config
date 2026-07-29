@@ -110,13 +110,15 @@ spec:
 
         #--------------------------------------------------------------
         # Node Exporter  (DaemonSet – runs on every node)
-        # hostNetwork: false  → avoids port 9100 conflict with
-        #   kube-proxy service rules.  Host metrics are still collected
-        #   via mounted hostPath volumes (/proc, /sys, /).
+        # hostNetwork: false → avoids kube-proxy port conflict.
+        # endpoints: overrides Helm template bug that generates 
+        #   two conflicting --web.listen-address arguments.
         #--------------------------------------------------------------
         prometheus-node-exporter:
           hostNetwork: false
           hostPID: true
+          endpoints:
+            - 0.0.0.0:9100
           resources:
             requests:
               cpu: 10m
