@@ -17,7 +17,10 @@ spec:
           nodeSelector:
             workload: infrastructure
           service:
-            type: LoadBalancer
+            type: ClusterIP
+          ingress:
+            enabled: true
+            ingressClassName: nginx
           resources:
             requests:
               cpu: 20m
