@@ -119,6 +119,12 @@ spec:
           hostPID: true
           endpoints:
             - 0.0.0.0:9100
+          prometheus:
+            monitor:
+              relabelings:
+                - sourceLabels: [__meta_kubernetes_pod_node_name]
+                  targetLabel: instance
+                  action: replace
           resources:
             requests:
               cpu: 10m
