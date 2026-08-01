@@ -39,6 +39,15 @@ spec:
         {{- toYaml .Values.global.labels | nindent 8 }}
         {{- end }}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: workload
+                    operator: NotIn
+                    values:
+                      - infrastructure
       containers:
         - name: {{ .Values.mysql.name }}
           image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"

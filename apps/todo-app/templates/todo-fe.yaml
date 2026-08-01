@@ -16,6 +16,15 @@ spec:
         {{- toYaml .Values.global.labels | nindent 8 }}
         {{- end }}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: workload
+                    operator: NotIn
+                    values:
+                      - infrastructure
       containers:
         - name: {{ .Values.todoFe.name }}
           image: "{{ .Values.todoFe.image.repository }}:{{ .Values.todoFe.image.tag }}"

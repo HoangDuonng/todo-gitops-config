@@ -655,6 +655,15 @@ spec:
         {{- toYaml .Values.global.labels | nindent 8 }}
         {{- end }}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: workload
+                    operator: NotIn
+                    values:
+                      - infrastructure
       initContainers:
         - name: wait-for-redis
           image: busybox:1.36
