@@ -54,7 +54,7 @@ authService:
   image:
     repository: us-central1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/auth-service
     tag: "latest"
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 5m
@@ -71,7 +71,7 @@ userService:
   image:
     repository: us-central1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/profile-service
     tag: "latest"
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 5m
@@ -87,7 +87,7 @@ taskService:
   image:
     repository: us-central1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/task-service
     tag: "latest"
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 5m
@@ -102,7 +102,7 @@ gateway:
   image:
     repository: docker.tyk.io/tyk-gateway/tyk-gateway
     tag: v5.3.0
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 10m
@@ -117,7 +117,7 @@ todoFe:
   image:
     repository: us-central1-docker.pkg.dev/todo-devops-500719/todo-repo-dev/todo-fe
     tag: "latest"
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 5m

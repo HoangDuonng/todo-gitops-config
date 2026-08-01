@@ -25,6 +25,15 @@ spec:
                     operator: NotIn
                     values:
                       - infrastructure
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - {{ .Values.todoFe.name }}
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: {{ .Values.todoFe.name }}
           image: "{{ .Values.todoFe.image.repository }}:{{ .Values.todoFe.image.tag }}"

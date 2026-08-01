@@ -664,6 +664,15 @@ spec:
                     operator: NotIn
                     values:
                       - infrastructure
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - {{ .Values.gateway.name }}
+              topologyKey: "kubernetes.io/hostname"
       initContainers:
         - name: wait-for-redis
           image: busybox:1.36
