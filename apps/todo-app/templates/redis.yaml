@@ -34,7 +34,7 @@ spec:
             nodeSelectorTerms:
               - matchExpressions:
                   - key: workload
-                    operator: NotIn
+                    operator: In
                     values:
                       - infrastructure
       containers:
