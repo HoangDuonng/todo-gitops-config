@@ -38,7 +38,7 @@ spec:
               enabled: true
               searchNamespace: monitoring
 
-          # Explicit datasources (Loki is not auto-discovered)
+          # Explicit datasources (Loki & Tempo)
           additionalDataSources:
             - name: Loki
               type: loki
@@ -47,6 +47,11 @@ spec:
               isDefault: false
               jsonData:
                 maxLines: 1000
+            - name: Tempo
+              type: tempo
+              access: proxy
+              url: http://tempo.default:3200
+              isDefault: false
 
           persistence:
             enabled: true
