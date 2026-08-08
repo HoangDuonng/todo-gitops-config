@@ -221,3 +221,33 @@ spec:
       port: 3306
   policyTypes:
   - Ingress
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-tempo
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ .Values.tempo.name }}
+  ingress:
+  # 1. Allow OTLP gRPC/HTTP from all microservices in todo-app
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 4317
+    - protocol: TCP
+      port: 4318
+  # 2. Allow Grafana from monitoring namespace to query Tempo HTTP API
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: monitoring
+    ports:
+    - protocol: TCP
+      port: 3200
+  policyTypes:
+  - Ingress
