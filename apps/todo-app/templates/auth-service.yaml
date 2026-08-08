@@ -79,6 +79,10 @@ spec:
                   key: JWT_SECRET
             - name: DB_DSN
               value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ .Values.mysql.name }}:3306)/todo-auth?charset=utf8mb4&parseTime=True&loc=Local
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.authService.name }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.exporterEndpoint | quote }}
           resources:
             {{- toYaml .Values.authService.resources | nindent 12 }}
           readinessProbe:

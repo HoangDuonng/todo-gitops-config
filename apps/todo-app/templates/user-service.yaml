@@ -74,6 +74,10 @@ spec:
                   key: MYSQL_ROOT_PASSWORD
             - name: DB_DSN
               value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ .Values.mysql.name }}:3306)/todo-user?charset=utf8mb4&parseTime=True&loc=Local
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.userService.name }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.exporterEndpoint | quote }}
           resources:
             {{- toYaml .Values.userService.resources | nindent 12 }}
           readinessProbe:

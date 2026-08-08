@@ -130,3 +130,25 @@ ingress:
   className: nginx
   annotations:
     kubernetes.io/ingress.class: "nginx"
+
+tempo:
+  enabled: true
+  name: tempo
+  image:
+    repository: grafana/tempo
+    tag: 2.4.1
+  servicePort:
+    grpc: 4317
+    http: 4318
+    tempoHttp: 3200
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+
+otel:
+  exporterEndpoint: "tempo:4317"
+
