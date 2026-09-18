@@ -42,7 +42,7 @@ spec:
           command:
             - sh
             - -c
-            - "until nc -z {{ .Values.mysql.name }} {{ .Values.mysql.servicePort }}; do echo waiting for mysql; sleep 2; done"
+            - "until nc -z {{ include "todo-chart.mysqlHost" . }} {{ .Values.mysql.servicePort }}; do echo waiting for mysql; sleep 2; done"
       containers:
         - name: {{ .Values.userService.name }}
           image: "{{ .Values.userService.image.repository }}:{{ .Values.userService.image.tag }}"
@@ -73,7 +73,7 @@ spec:
                   name: app-secrets
                   key: MYSQL_ROOT_PASSWORD
             - name: DB_DSN
-              value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ .Values.mysql.name }}:3306)/todo-user?charset=utf8mb4&parseTime=True&loc=Local
+              value: root:$(MYSQL_ROOT_PASSWORD)@tcp({{ include "todo-chart.mysqlHost" . }}:3306)/todo-user?charset=utf8mb4&parseTime=True&loc=Local
             - name: OTEL_SERVICE_NAME
               value: {{ .Values.userService.name }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT

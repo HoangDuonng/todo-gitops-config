@@ -51,6 +51,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+MySQL host: in-cluster service when enabled, external Cloud SQL otherwise.
+*/}}
+{{- define "todo-chart.mysqlHost" -}}
+{{- if .Values.mysql.enabled -}}
+{{ .Values.mysql.name }}
+{{- else -}}
+{{ .Values.mysql.externalHost }}
+{{- end -}}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "todo-chart.serviceAccountName" -}}

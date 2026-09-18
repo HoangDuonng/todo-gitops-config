@@ -17,6 +17,9 @@ config:
   ginPortTask: "3300"
 
 mysql:
+  # false = use external Cloud SQL, in-cluster manifests are skipped but kept
+  enabled: false
+  externalHost: "10.21.0.3"
   name: mysql
   servicePort: 3306
   image:
